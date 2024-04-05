@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import random
-
+from customtkinter import CTkFrame
 class KnapsackApp:
     def __init__(self, master, background_image2):
         self.master = master
@@ -11,14 +11,41 @@ class KnapsackApp:
         # self.master.attributes("-zoomed", True)
         self.dark_mode = False  # Default: Light Mode
 
-        background_label2 = tk.Label(master, image=background_image2)
-        background_label2.place(x=0, y=0, relwidth=1, relheight=1)
+        # background_label2 = tk.Label(master, image=background_image2)
+        # background_label2.place(x=0, y=0, relwidth=1, relheight=1)
 
-        self.background_image2 = background_image2
+        self.background_image2 = None
         self.items = [(10, 60), (20, 100), (30, 120)]  # Example items (weight, value)
         self.max_weight = 50
 
         self.create_widgets()
+        self.create_pannel()
+
+    def create_pannel(self):
+        self.button_frame = CTkFrame(self.master)
+        self.button_frame.pack(side=tk.TOP, pady=5)
+        
+        self.graph_canvas = tk.Canvas(self.master)
+        self.graph_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        self.result_text = tk.Text(self.master, height=10, width=50)
+        self.result_text.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=10)
+        
+        self.add_item_button = ttk.Button(self.button_frame, text="Add Item", command=self.add_item, style="Custom.TButton")
+        self.add_item_button.pack(side=tk.RIGHT, padx=5)
+
+        self.remove_item_button = ttk.Button(self.button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
+        self.remove_item_button.pack(side=tk.RIGHT, padx=5)
+
+        self.exit_button = ttk.Button(self.button_frame, text="Exit ", command=self.exit_app, style="Custom.TButton")
+        self.exit_button.pack(side=tk.RIGHT, padx=5)
+
+        # Add solve button
+        self.solve_button = ttk.Button(self.button_frame, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
+        self.solve_button.pack(side=tk.RIGHT, padx=5)
+
+
+
 
     def create_widgets(self):
         self.item_frame = ttk.Frame(self.master, padding="20 10")
@@ -96,19 +123,10 @@ class KnapsackApp:
         self.snacks_button = ttk.Button(self.button_frame, text="Snacks", image=self.snacks, compound=tk.LEFT, command=lambda: self.add_item("Snacks"), style="Custom.TButton")
         self.snacks_button.pack(side=tk.TOP, padx=5, pady=5)
 
-        # Add buttons to add or remove items
-        self.item_button_frame = ttk.Frame(self.master, padding="20")
-        self.item_button_frame.pack(side=tk.TOP, fill=tk.X)
 
-        self.add_item_button = ttk.Button(self.item_button_frame, text="Add Item", command=self.add_item, style="Custom.TButton")
-        self.add_item_button.pack(side=tk.LEFT, padx=5)
 
-        self.remove_item_button = ttk.Button(self.item_button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
-        self.remove_item_button.pack(side=tk.LEFT, padx=5)
-
-        # Add solve button
-        self.solve_button = ttk.Button(self.master, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
-        self.solve_button.pack(side=tk.TOP, padx=20, pady=10)
+    def exit_app(self):
+        self.master.destroy()
 
     def add_item(self, item_name=None):
         # Add the selected item

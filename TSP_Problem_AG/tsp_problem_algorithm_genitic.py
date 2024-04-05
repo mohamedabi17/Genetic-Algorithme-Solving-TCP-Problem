@@ -8,6 +8,7 @@ import ctypes
 from PIL import Image, ImageTk
 # from GENETIC import main
 
+import random  # Add this import statement at the beginning of your script
 
 class GraphConverterApp:
     def __init__(self, master, background_image):
@@ -47,6 +48,9 @@ class GraphConverterApp:
         self.clear_icon = ImageTk.PhotoImage(Image.open("images/clear_icon.ico").resize((15, 15)))
         self.home_icon = ImageTk.PhotoImage(Image.open("images/home.ico").resize((15, 15)))
         self.exit_icon = ImageTk.PhotoImage(Image.open("images/exit.jpg").resize((15, 15)))
+        self.random_distance_icon = ImageTk.PhotoImage(Image.open("images/random_distance_icon.jpg").resize((15, 15)))
+        # Add an icon for the button
+
 
 
 
@@ -69,6 +73,10 @@ class GraphConverterApp:
 
         self.home_button = ttk.Button(self.button_frame, text="Home", image=self.home_icon, compound=tk.LEFT, command=self.go_home, takefocus=0, style='CustomButton.TButton')
         self.home_button.pack(side=tk.TOP, padx=5, pady=padding_y)
+
+
+        self.random_distance_button = ttk.Button(self.button_frame, text="Random Distances", image=self.random_distance_icon, compound=tk.LEFT, command=self.generate_random_distances, takefocus=0, style='CustomButton.TButton')
+        self.random_distance_button.pack(side=tk.TOP, padx=5, pady=padding_y)
         
         self.exit_button = ttk.Button(self.button_frame, text="Exit", image=self.exit_icon, compound=tk.LEFT, command=self.exit_app, takefocus=0, style='CustomButton.TButton')
         self.exit_button.pack(side=tk.TOP, padx=5, pady=padding_y)
@@ -81,6 +89,28 @@ class GraphConverterApp:
 
         self.node_count = 0
         self.connecting_nodes = False
+
+    def generate_random_distances(self):
+        if len(self.points) == 0:
+            messagebox.showerror("Error", "Please create nodes first.")
+            return
+
+        if self.distances is not None:
+            messagebox.showwarning("Warning", "Distances already converted to matrix.")
+            return
+
+        self.distances = np.zeros((len(self.points), len(self.points)))
+
+        for i in range(len(self.points)):
+            for j in range(i + 1, len(self.points)):
+                # Check if the distance is already set
+                if self.distances[i][j] == 0:
+                    # If not set, generate a random distance
+                    distance = random.uniform(1, 100)  # Adjust the range according to your requirements
+                    self.distances[i][j] = self.distances[j][i] = distance
+                    # Update the canvas with the distance
+                    self.graph_canvas.create_line(self.points[i][0], self.points[i][1], self.points[j][0], self.points[j][1], fill="black", width=2, tags="line")
+                    self.graph_canvas.create_text((self.points[i][0] + self.points[j][0]) / 2, (self.points[i][1] + self.points[j][1]) / 2, text=str(distance), fill="black", font=("Time new romain", 12, "bold"), tags="text")
     
     def on_mousewheel(self, event):
         self.graph_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
@@ -150,6 +180,8 @@ class GraphConverterApp:
             self.connecting_nodes = True
             self.convert_button.config(state=tk.DISABLED)
             self.graph_canvas.bind("<Button-1>", self.add_connection)
+    
+    
 
     def convert_to_matrix(self):
         if len(self.points) == 0:
