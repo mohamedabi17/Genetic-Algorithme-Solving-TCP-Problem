@@ -3,13 +3,14 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from sac import KnapsackApp
 from tsp_problem_algorithm_genitic import GraphConverterApp
+from ordonencement import TaskSchedulerGUI
 
 def main():
     root = tk.Tk()
     root.title("TSP Solver with Genetic Algorithm")
     root.attributes("-fullscreen", True)  # Set to fullscreen
-    root.configure(bg="white")
-    root.resizable(False, False)  
+    # root.configure(bg="white")
+    root.resizable(True, True)  
 
     # Load background image
     image_path = 'images/background.jpg'
@@ -32,6 +33,13 @@ def main():
             button1.place_forget()  # Hide the TCP PROBLEM button
             button2.place_forget()  # Hide the Knapsack Problem button
             app = KnapsackApp(root, background_image2)
+    def open_third_interface():
+        button1.place_forget()  # Hide the TCP PROBLEM button
+        button2.place_forget()  # Hide the Knapsack Problem button
+        button3.place_forget()  # Hide the Knapsack Problem button
+        root.title("Task Scheduler")  # Set the window title
+        app = TaskSchedulerGUI(root)  # Create an instance of TaskSchedulerGUI
+
 
     
     # Define button width and height
@@ -46,7 +54,8 @@ def main():
     # Load and resize button icons
     button_icons = [
         Image.open("images/tcp.jpg").resize((button_height, button_height), Image.LANCZOS),
-        Image.open("images/sac.png").resize((button_height, button_height), Image.LANCZOS)
+        Image.open("images/sac.png").resize((button_height, button_height), Image.LANCZOS),
+        Image.open("images/callendat.png").resize((button_height, button_height), Image.LANCZOS)
     ]
     button_icons = [ImageTk.PhotoImage(icon) for icon in button_icons]
 
@@ -70,6 +79,15 @@ def main():
         style='Modern.TButton'
     )
     button2.place(relx=0.5, rely=0.6, anchor=tk.CENTER)  # Center the button vertically
+    button3 = ttk.Button(
+        root,
+        text="scheduling  Problem",
+        command=open_third_interface,
+        image=button_icons[2],
+        compound=tk.LEFT,
+        style='Modern.TButton'
+    )
+    button3.place(relx=0.5, rely=0.8, anchor=tk.CENTER)  # Center the button vertically
 
     root.mainloop()
 
