@@ -9,8 +9,10 @@ class KnapsackApp:
         self.master.title("Knapsack Problem Solver")
         self.master.attributes("-fullscreen", True)
         # self.master.attributes("-zoomed", True)
-        self.master.configure(bg="white")
         self.dark_mode = False  # Default: Light Mode
+
+        background_label2 = tk.Label(master, image=background_image2)
+        background_label2.place(x=0, y=0, relwidth=1, relheight=1)
 
         self.background_image2 = background_image2
         self.items = [(10, 60), (20, 100), (30, 120)]  # Example items (weight, value)
@@ -28,26 +30,26 @@ class KnapsackApp:
             label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
             self.item_labels.append(label)
 
-        self.solution_label = ttk.Label(self.master, text="Best Solution:", font=("Helvetica", 16, "bold"), background="#f0f0f0")
+        self.solution_label = ttk.Label(self.master, text="Best Solution:", font=("Helvetica", 16, "bold"))
         self.solution_label.pack(side=tk.TOP, padx=20, pady=10)
 
         # Add buttons to adjust parameters
         self.param_frame = ttk.Frame(self.master, padding="20")
         self.param_frame.pack(side=tk.TOP, fill=tk.X)
 
-        self.population_label = ttk.Label(self.param_frame, text="Population Size:", font=("Helvetica", 14), background="#f0f0f0")
+        self.population_label = ttk.Label(self.param_frame, text="Population Size:", font=("Helvetica", 14))
         self.population_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.population_entry = ttk.Entry(self.param_frame, width=10, font=("Helvetica", 14))
         self.population_entry.grid(row=0, column=1, padx=5, pady=5)
         self.population_entry.insert(0, "100")
 
-        self.generations_label = ttk.Label(self.param_frame, text="Number of Generations:", font=("Helvetica", 14), background="#f0f0f0")
+        self.generations_label = ttk.Label(self.param_frame, text="Number of Generations:", font=("Helvetica", 14))
         self.generations_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
         self.generations_entry = ttk.Entry(self.param_frame, width=10, font=("Helvetica", 14))
         self.generations_entry.grid(row=1, column=1, padx=5, pady=5)
         self.generations_entry.insert(0, "50")
 
-        self.mutation_label = ttk.Label(self.param_frame, text="Mutation Rate:", font=("Helvetica", 14), background="#f0f0f0")
+        self.mutation_label = ttk.Label(self.param_frame, text="Mutation Rate:", font=("Helvetica", 14))
         self.mutation_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
         self.mutation_entry = ttk.Entry(self.param_frame, width=10, font=("Helvetica", 14))
         self.mutation_entry.grid(row=2, column=1, padx=5, pady=5)
@@ -58,23 +60,23 @@ class KnapsackApp:
         self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Define icons for objects
-        self.bottle_image = Image.open("sac_images/bottle.png")
+        self.bottle_image = Image.open("sac_images/1.png")
         self.bottle_image = self.bottle_image.resize((50, 50),Image.Resampling.LANCZOS)
         self.bottle = ImageTk.PhotoImage(self.bottle_image)
 
-        self.headphones_image = Image.open("sac_images/headphones.png")
+        self.headphones_image = Image.open("sac_images/2.png")
         self.headphones_image = self.headphones_image.resize((50, 50),Image.Resampling.LANCZOS)
         self.headphones = ImageTk.PhotoImage(self.headphones_image)
 
-        self.laptop_image = Image.open("sac_images/laptop.png")
+        self.laptop_image = Image.open("sac_images/3.png")
         self.laptop_image = self.laptop_image.resize((50, 50),Image.Resampling.LANCZOS)
         self.laptop = ImageTk.PhotoImage(self.laptop_image)
 
-        self.phone_image = Image.open("sac_images/phone.jpeg")
+        self.phone_image = Image.open("sac_images/4.png")
         self.phone_image = self.phone_image.resize((50, 50),Image.Resampling.LANCZOS)
         self.phone = ImageTk.PhotoImage(self.phone_image)
 
-        self.snacks_image = Image.open("sac_images/snacks.png")
+        self.snacks_image = Image.open("sac_images/5.png")
         self.snacks_image = self.snacks_image.resize((50, 50),Image.Resampling.LANCZOS)
         self.snacks = ImageTk.PhotoImage(self.snacks_image)
 
@@ -156,6 +158,20 @@ class KnapsackApp:
             if selected_items:
                 item_names = ', '.join([f"Item {i+1} (Weight={item[0]}, Value={item[1]})" for i, item in enumerate(selected_items)])
                 self.solution_label.config(text=f"Best Solution: {item_names}")
+
+                # Display images of selected items in a popup
+                popup = tk.Toplevel(self.master)
+                popup.title("Selected Items")
+
+                for i, (weight, value) in enumerate(selected_items):
+                    item_image_path = f"sac_images/{i+1}.png"  # Assuming images are named item_1.png, item_2.png, etc.
+                    item_image = Image.open(item_image_path)
+                    item_image = item_image.resize((100, 100), Image.LANCZOS)
+                    item_photo = ImageTk.PhotoImage(item_image)
+                    item_label = ttk.Label(popup, image=item_photo)
+                    item_label.image = item_photo
+                    item_label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
+
             else:
                 self.solution_label.config(text="No items selected in the solution")
         except ValueError:

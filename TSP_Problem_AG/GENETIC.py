@@ -21,6 +21,7 @@ def main():
 
     background_label = tk.Label(root, image=background_image)
     background_label.place(x=0, y=0, relwidth=1, relheight=1)
+   
 
     def open_first_interface():
         button1.place_forget()  # Hide the TCP PROBLEM button
@@ -57,7 +58,7 @@ def main():
     button2.place(relx=0.5, rely=0.6, anchor=tk.CENTER)  # Center the button
 
     # Define modern button style
-    button_style.configure('Modern.TButton', font=('Arial', 12, 'bold'), foreground='white', background='#4CAF50', width=button_width, height=button_height)
+    button_style.configure('Modern.TButton', font=('Arial', 12, 'bold'), foreground='white', background='blue', width=button_width, height=button_height)
 
     root.mainloop()
 
