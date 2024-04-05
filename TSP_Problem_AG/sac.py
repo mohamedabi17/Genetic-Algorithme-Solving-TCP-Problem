@@ -1,101 +1,114 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from PIL import Image, ImageTk
 import random
 
 class KnapsackApp:
-    def __init__(self, master):
+    def __init__(self, master, background_image2):
         self.master = master
         self.master.title("Knapsack Problem Solver")
         self.master.attributes("-fullscreen", True)
+        # self.master.attributes("-zoomed", True)
         self.master.configure(bg="white")
+        self.dark_mode = False  # Default: Light Mode
 
+        self.background_image2 = background_image2
         self.items = [(10, 60), (20, 100), (30, 120)]  # Example items (weight, value)
         self.max_weight = 50
 
         self.create_widgets()
 
     def create_widgets(self):
-        self.item_frame = ttk.Frame(self.master)
-        self.item_frame.pack(side=tk.TOP, padx=10, pady=10)
+        self.item_frame = ttk.Frame(self.master, padding="20 10")
+        self.item_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.item_labels = []
         for i, (weight, value) in enumerate(self.items):
-            label = ttk.Label(self.item_frame, text=f"Item {i+1}: Weight={weight}, Value={value}")
-            label.grid(row=i, column=0, padx=5, pady=5, sticky="w")
+            label = ttk.Label(self.item_frame, text=f"Item {i+1}: Weight={weight}, Value={value}", font=("Helvetica", 14))
+            label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
             self.item_labels.append(label)
 
-        self.solution_label = ttk.Label(self.master, text="Best Solution:")
-        self.solution_label.pack(side=tk.TOP, padx=10, pady=10)
+        self.solution_label = ttk.Label(self.master, text="Best Solution:", font=("Helvetica", 16, "bold"), background="#f0f0f0")
+        self.solution_label.pack(side=tk.TOP, padx=20, pady=10)
 
         # Add buttons to adjust parameters
-        self.param_frame = ttk.Frame(self.master)
-        self.param_frame.pack(side=tk.TOP, padx=10, pady=10)
+        self.param_frame = ttk.Frame(self.master, padding="20")
+        self.param_frame.pack(side=tk.TOP, fill=tk.X)
 
-        self.population_label = ttk.Label(self.param_frame, text="Population Size:")
+        self.population_label = ttk.Label(self.param_frame, text="Population Size:", font=("Helvetica", 14), background="#f0f0f0")
         self.population_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        self.population_entry = ttk.Entry(self.param_frame, width=10)
+        self.population_entry = ttk.Entry(self.param_frame, width=10, font=("Helvetica", 14))
         self.population_entry.grid(row=0, column=1, padx=5, pady=5)
         self.population_entry.insert(0, "100")
 
-        self.generations_label = ttk.Label(self.param_frame, text="Number of Generations:")
+        self.generations_label = ttk.Label(self.param_frame, text="Number of Generations:", font=("Helvetica", 14), background="#f0f0f0")
         self.generations_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.generations_entry = ttk.Entry(self.param_frame, width=10)
+        self.generations_entry = ttk.Entry(self.param_frame, width=10, font=("Helvetica", 14))
         self.generations_entry.grid(row=1, column=1, padx=5, pady=5)
         self.generations_entry.insert(0, "50")
 
-        self.mutation_label = ttk.Label(self.param_frame, text="Mutation Rate:")
+        self.mutation_label = ttk.Label(self.param_frame, text="Mutation Rate:", font=("Helvetica", 14), background="#f0f0f0")
         self.mutation_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-        self.mutation_entry = ttk.Entry(self.param_frame, width=10)
+        self.mutation_entry = ttk.Entry(self.param_frame, width=10, font=("Helvetica", 14))
         self.mutation_entry.grid(row=2, column=1, padx=5, pady=5)
         self.mutation_entry.insert(0, "0.1")
 
         # Create a frame for buttons
-        self.button_frame = ttk.Frame(self.master)
-        self.button_frame.pack(side=tk.RIGHT, padx=10, pady=10)
+        self.button_frame = ttk.Frame(self.master, padding="20")
+        self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Define icons for objects
-        self.bottle = tk.PhotoImage(file="sac_images/bottle.png")
-        self.bottle = self.bottle.subsample(15)
-        self.headphones = tk.PhotoImage(file="sac_images/headphones.png")
-        self.headphones = self.headphones.subsample(15)
-        self.laptop = tk.PhotoImage(file="sac_images/laptop.png")
-        self.laptop = self.laptop.subsample(15)
-        self.phone = tk.PhotoImage(file="sac_images/phone.jpeg")
-        self.phone = self.phone.subsample(15)
-        self.snacks = tk.PhotoImage(file="sac_images/snacks.png")
-        self.snacks = self.snacks.subsample(6)
+        self.bottle_image = Image.open("sac_images/bottle.png")
+        self.bottle_image = self.bottle_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.bottle = ImageTk.PhotoImage(self.bottle_image)
+
+        self.headphones_image = Image.open("sac_images/headphones.png")
+        self.headphones_image = self.headphones_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.headphones = ImageTk.PhotoImage(self.headphones_image)
+
+        self.laptop_image = Image.open("sac_images/laptop.png")
+        self.laptop_image = self.laptop_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.laptop = ImageTk.PhotoImage(self.laptop_image)
+
+        self.phone_image = Image.open("sac_images/phone.jpeg")
+        self.phone_image = self.phone_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.phone = ImageTk.PhotoImage(self.phone_image)
+
+        self.snacks_image = Image.open("sac_images/snacks.png")
+        self.snacks_image = self.snacks_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.snacks = ImageTk.PhotoImage(self.snacks_image)
 
         # Add buttons for objects
-        self.bottle_button = ttk.Button(self.button_frame, text="Bottle", image=self.bottle, compound=tk.LEFT, command=lambda: self.add_item("Bottle"))
+        self.bottle_button = ttk.Button(self.button_frame, text="Bottle", image=self.bottle, compound=tk.LEFT, command=lambda: self.add_item("Bottle"), style="Custom.TButton")
         self.bottle_button.pack(side=tk.TOP, padx=5, pady=5)
 
-        self.headphones_button = ttk.Button(self.button_frame, text="Headphones", image=self.headphones, compound=tk.LEFT, command=lambda: self.add_item("Headphones"))
+        self.headphones_button = ttk.Button(self.button_frame, text="Headphones", image=self.headphones, compound=tk.LEFT, command=lambda: self.add_item("Headphones"), style="Custom.TButton")
         self.headphones_button.pack(side=tk.TOP, padx=5, pady=5)
 
-        self.laptop_button = ttk.Button(self.button_frame, text="Laptop", image=self.laptop, compound=tk.LEFT, command=lambda: self.add_item("Laptop"))
+        self.laptop_button = ttk.Button(self.button_frame, text="Laptop", image=self.laptop, compound=tk.LEFT, command=lambda: self.add_item("Laptop"), style="Custom.TButton")
         self.laptop_button.pack(side=tk.TOP, padx=5, pady=5)
 
-        self.phone_button = ttk.Button(self.button_frame, text="Phone", image=self.phone, compound=tk.LEFT, command=lambda: self.add_item("Phone"))
+        self.phone_button = ttk.Button(self.button_frame, text="Phone", image=self.phone, compound=tk.LEFT, command=lambda: self.add_item("Phone"), style="Custom.TButton")
         self.phone_button.pack(side=tk.TOP, padx=5, pady=5)
 
-        self.snacks_button = ttk.Button(self.button_frame, text="Snacks", image=self.snacks, compound=tk.LEFT, command=lambda: self.add_item("Snacks"))
+        self.snacks_button = ttk.Button(self.button_frame, text="Snacks", image=self.snacks, compound=tk.LEFT, command=lambda: self.add_item("Snacks"), style="Custom.TButton")
         self.snacks_button.pack(side=tk.TOP, padx=5, pady=5)
 
         # Add buttons to add or remove items
-        self.item_button_frame = ttk.Frame(self.master)
-        self.item_button_frame.pack(side=tk.TOP, padx=10, pady=10)
+        self.item_button_frame = ttk.Frame(self.master, padding="20")
+        self.item_button_frame.pack(side=tk.TOP, fill=tk.X)
 
-        self.add_item_button = ttk.Button(self.item_button_frame, text="Add Item", command=self.add_item)
+        self.add_item_button = ttk.Button(self.item_button_frame, text="Add Item", command=self.add_item, style="Custom.TButton")
         self.add_item_button.pack(side=tk.LEFT, padx=5)
 
-        self.remove_item_button = ttk.Button(self.item_button_frame, text="Remove Item", command=self.remove_item)
+        self.remove_item_button = ttk.Button(self.item_button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
         self.remove_item_button.pack(side=tk.LEFT, padx=5)
 
         # Add solve button
-        self.solve_button = ttk.Button(self.master, text="Solve", command=self.solve_knapsack)
-        self.solve_button.pack(side=tk.TOP, padx=10, pady=10)
+        self.solve_button = ttk.Button(self.master, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
+        self.solve_button.pack(side=tk.TOP, padx=20, pady=10)
 
-    def add_item(self, item_name):
+    def add_item(self, item_name=None):
         # Add the selected item
         if item_name == "Bottle":
             self.items.append((5, 10))  # Example weight and value for Bottle
@@ -127,8 +140,8 @@ class KnapsackApp:
         # Create new labels
         self.item_labels = []
         for i, (weight, value) in enumerate(self.items):
-            label = ttk.Label(self.item_frame, text=f"Item {i+1}: Weight={weight}, Value={value}")
-            label.grid(row=i, column=0, padx=5, pady=5, sticky="w")
+            label = ttk.Label(self.item_frame, text=f"Item {i+1}: Weight={weight}, Value={value}", font=("Helvetica", 14))
+            label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
             self.item_labels.append(label)
 
     def solve_knapsack(self):
@@ -138,7 +151,13 @@ class KnapsackApp:
             mutation_rate = float(self.mutation_entry.get())
 
             solution = self.genetic_algorithm(population_size, num_generations, mutation_rate)
-            self.solution_label.config(text=f"Best Solution: {solution}")
+            selected_items = [self.items[i] for i, selected in enumerate(solution) if selected]
+
+            if selected_items:
+                item_names = ', '.join([f"Item {i+1} (Weight={item[0]}, Value={item[1]})" for i, item in enumerate(selected_items)])
+                self.solution_label.config(text=f"Best Solution: {item_names}")
+            else:
+                self.solution_label.config(text="No items selected in the solution")
         except ValueError:
             messagebox.showerror("Error", "Invalid input for parameters. Please enter valid numbers.")
 
@@ -187,5 +206,4 @@ class KnapsackApp:
             if random.random() < mutation_rate:
                 individual[i] = 1 - individual[i]
         return individual
-
 

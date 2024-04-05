@@ -6,7 +6,7 @@ from deap import creator, base, tools, algorithms
 import random
 import ctypes
 from PIL import Image, ImageTk
-from sac import KnapsackApp
+# from GENETIC import main
 
 
 class GraphConverterApp:
@@ -219,65 +219,7 @@ class GraphConverterApp:
 
     def go_home(self):
         self.master.destroy()  
-        main()  
-
-
-def main():
-    root = tk.Tk()
-    root.title("TSP Solver with Genetic Algorithm")
-    # Set window attributes for fullscreen
-    root.attributes('-fullscreen', True)
-    root.configure(bg="white")
-    root.resizable(False, False)    
-
-    image_path = 'images/background.png'
-    width, height = 1200, 800
-    img = Image.open(image_path).resize((width, height), Image.LANCZOS)
-    background_image = ImageTk.PhotoImage(img)
-
-    background_label = tk.Label(root, image=background_image)
-    background_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-    def open_tcp_problem_interface():
-    # Function to open TCP Problem interface
-    tcp_window = tk.Toplevel(root)
-    tcp_window.title("TCP Problem Interface")
-    tcp_window.geometry("800x600")
-    app = KnapsackApp(tcp_window)  # Assuming KnapsackApp is designed to work in a Toplevel window
-
-def open_knapsack_interface():
-    # Function to open Knapsack Problem interface
-    knapsack_window = tk.Toplevel(root)
-    knapsack_window.title("Knapsack Problem Interface")
-    knapsack_window.geometry("800x600")
-    app = GraphConverterApp(knapsack_window, background_image)  # Assuming GraphConverterApp requires a background image
+        # main()  
 
 
 
-    # Load button images
-    image_width = 100
-    image_height = 100
-    button1_image = ImageTk.PhotoImage(Image.open("images/tcp.jpg").resize((image_width, image_height)))
-    button2_image = ImageTk.PhotoImage(Image.open("images/sac.png").resize((image_width, image_height)))
-
-    # Create a frame to contain the buttons
-    button_frame = tk.Frame(root, bg="white")
-    button_frame.pack(expand=True, fill=tk.BOTH)
-
-    # Create buttons
-    button1 = tk.Button(button_frame, text="TCP PROBLEM", command=open_first_interface, font=("Arial", 12, "bold"), bg="white", fg="blue", image=button1_image, compound=tk.LEFT)
-    button1.image = button1_image  # Keep a reference to prevent garbage collection
-    button1.pack(side=tk.LEFT, padx=10, pady=10)
-
-    button2 = tk.Button(button_frame, text="Knapsack Problem", command=open_second_interface, font=("Arial", 12, "bold"), bg="white", fg="blue", image=button2_image, compound=tk.LEFT)
-    button2.image = button2_image  # Keep a reference to prevent garbage collection
-    button2.pack(side=tk.LEFT, padx=10, pady=10)
-
-    # Apply style to buttons
-    style = ttk.Style()
-    style.configure('Custom.TButton', font=('Arial', 12, 'bold'))
-
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
