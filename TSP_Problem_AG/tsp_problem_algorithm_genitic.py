@@ -19,6 +19,10 @@ class GraphConverterApp:
         self.master.configure(bg="white")
         self.dark_mode = False  # Default: Light Mode
 
+        # #  # Add title label
+        # self.title_label = ttk.Label(self.master, text="TSP Solver with Genetic Algorithm", font=("Helvetica", 24, "bold"))
+        # self.title_label.pack(pady=30)  # Adjust padding as needed
+        
         self.background_image = background_image
 
         self.points = []

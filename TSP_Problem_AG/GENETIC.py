@@ -12,6 +12,9 @@ def main():
     # root.configure(bg="white")
     root.resizable(True, True)  
 
+    # Add title label
+    title_label = ttk.Label(root, text="GENETIC ALGORITHM PROBLEM SOLVER APP", font=("Helvetica", 24, "bold"))
+    title_label.pack(pady=20)  # Adjust padding as needed
     # Load background image
     image_path = 'images/background.jpg'
     img = Image.open(image_path).resize((root.winfo_screenwidth(), root.winfo_screenheight()), Image.LANCZOS)

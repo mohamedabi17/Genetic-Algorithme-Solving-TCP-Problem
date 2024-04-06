@@ -11,57 +11,94 @@ class TaskScheduler:
         self.mutation_rate = mutation_rate
 
     def input_tasks(self, tasks):
-        # Set tasks from input
         self.tasks = tasks
 
     def input_num_resources(self, num_resources):
-        # Set number of resources from input
         self.num_resources = num_resources
 
     def input_parameters(self, pop_size, num_generations, mutation_rate):
-        # Set algorithm parameters from input
         self.pop_size = pop_size
         self.num_generations = num_generations
         self.mutation_rate = mutation_rate
 
     def create_initial_population(self):
-        return [random.sample(range(len(self.tasks)), len(self.tasks)) for _ in range(self.pop_size)]
+        if self.tasks is None:
+            raise ValueError("Tasks not provided")
+        if self.num_resources is None:
+            raise ValueError("Number of resources not provided")
+        
+        print("Generating initial population...")
+        initial_population = [random.sample(range(len(self.tasks)), len(self.tasks)) for _ in range(self.pop_size)]
+        print("Initial population generated:", initial_population)
+        
+        return initial_population
+
 
     def evaluate_fitness(self, schedule):
-        # Evaluate the quality of the schedule based on certain criteria
-        # For example, minimize total task duration or resource usage
         total_duration = sum(self.tasks[task]["duration"] for task in schedule)
-        return -total_duration  # Negative value since we aim to minimize duration
+        print(f"Fitness of schedule {schedule}: {total_duration}")
+        return -total_duration
+
 
     def selection(self, population):
-        # Select parent solutions based on their fitness for reproduction
         sorted_population = sorted(population, key=self.evaluate_fitness)
         selected_parents = sorted_population[:len(population)//2]
+        print("Selected parents:", selected_parents)
         return selected_parents
 
+
     def crossover(self, parent1, parent2):
-        # Perform crossover to produce new solutions
         crossover_point = random.randint(1, len(parent1) - 1)
         child1 = parent1[:crossover_point] + parent2[crossover_point:]
         child2 = parent2[:crossover_point] + parent1[crossover_point:]
+        print("Crossover:")
+        print("Parent 1:", parent1)
+        print("Parent 2:", parent2)
+        print("Child 1:", child1)
+        print("Child 2:", child2)
         return child1, child2
 
+
     def mutate(self, schedule):
-        # Perform mutation to introduce genetic diversity
+        print("Mutation:")
+        print("Before mutation:", schedule)
         for i in range(len(schedule)):
             if random.random() < self.mutation_rate:
                 schedule[i] = random.randint(0, len(self.tasks) - 1)
+        print("After mutation:", schedule)
         return schedule
 
+
     def optimize(self):
-        if self.tasks is None:
-            messagebox.showerror("Error", "Please input tasks.")
-            return
-        if self.num_resources is None:
-            messagebox.showerror("Error", "Please input number of resources.")
-            return
+        if self.tasks is None or len(self.tasks) == 0:
+            messagebox.showerror("Error", "No tasks provided. Please add tasks.")
+            return None  # Return None to indicate no optimization was performed
 
         population = self.create_initial_population()
+        if not population:
+            messagebox.showerror("Error", "Initial population is empty. Please check your inputs.")
+            return None  # Return None to indicate no optimization was performed
+
+        for gen in range(self.num_generations):
+            print(f"Generation {gen+1}/{self.num_generations}")
+            parents = self.selection(population)
+            print("Selected parents:", parents)
+            next_population = []
+            for parent1, parent2 in zip(parents[::2], parents[1::2]):
+                child1, child2 = self.crossover(parent1, parent2)
+                child1 = self.mutate(child1)
+                child2 = self.mutate(child2)
+                next_population.extend([child1, child2])
+            population = next_population
+
+        if not population:
+            print("Population is empty after generations. No solution found.")
+            return None
+
+        best_schedule = min(population, key=self.evaluate_fitness)
+        return best_schedule
+
+
         for _ in range(self.num_generations):
             parents = self.selection(population)
             next_population = []
@@ -75,13 +112,20 @@ class TaskScheduler:
         best_schedule = min(population, key=self.evaluate_fitness)
         return best_schedule
 
+
+
 class TaskSchedulerGUI:
     def __init__(self, master):
         self.master = master
         self.master.title("Task Scheduler")  # Set the title of the main window
+
+        #         # Add title label
+        # self.title_label = ttk.Label(self.master, text="Task Scheduler", font=("Helvetica", 24, "bold"))
+        # self.title_label.pack(pady=20)  # Adjust padding as needed
         
+         # Initialize tasks, resources, and other parameters
         self.tasks = {}
-        self.num_resources = None
+        self.resources = {}
         self.pop_size = 100
         self.num_generations = 1000
         self.mutation_rate = 0.01
@@ -121,9 +165,11 @@ class TaskSchedulerGUI:
 
         self.pop_size_label = ttk.Label(self.param_frame, text="Population Size:")
         self.pop_size_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
         self.pop_size_entry = ttk.Entry(self.param_frame, width=10)
         self.pop_size_entry.grid(row=0, column=1, padx=5, pady=5)
         self.pop_size_entry.insert(0, "100")
+
 
         self.num_generations_label = ttk.Label(self.param_frame, text="Number of Generations:")
         self.num_generations_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
@@ -145,45 +191,56 @@ class TaskSchedulerGUI:
             num_tasks = int(self.num_tasks_entry.get())
             tasks = {}
             for i in range(num_tasks):
-                duration = simpledialog.askinteger("Task Duration", f"Enter duration for task {i+1}:")
-                if duration is not None:
-                    tasks[i] = {"duration": duration}
-                else:
-                    messagebox.showwarning("Warning", "Task duration cannot be empty. Please try again.")
-                    return
+                while True:
+                    duration = simpledialog.askinteger("Task Duration", f"Enter duration for task {i+1}:")
+                    if duration is None:
+                        messagebox.showwarning("Warning", "Task duration cannot be empty. Please try again.")
+                    else:
+                        tasks[i] = {"duration": duration}
+                        break  # Break out of the loop if duration is provided
             self.tasks = tasks
             messagebox.showinfo("Success", "Tasks added successfully.")
+            print("Tasks:", self.tasks)  # Add this line to print tasks
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number of tasks.")
 
     def add_resources(self):
         try:
-            num_resources = simpledialog.askinteger("Number of Resources", "Enter number of resources:")
-            if num_resources is not None:
-                self.num_resources = num_resources
-                messagebox.showinfo("Success", "Number of resources added successfully.")
-            else:
-                messagebox.showwarning("Warning", "Number of resources cannot be empty. Please try again.")
+            num_resources = int(self.num_resources_entry.get())
+            self.num_resources = num_resources  # Update the number of resources
+            resources = {}
+            for i in range(num_resources):
+                duration = simpledialog.askinteger("Resource Duration", f"Enter duration for resource {i+1}:")
+                if duration is not None:
+                    resources[i] = {"duration": duration}
+                else:
+                    messagebox.showwarning("Warning", "Resource duration cannot be empty. Please try again.")
+                    return
+            self.resources = resources  # Store resources in self.resources
+            messagebox.showinfo("Success", "Resources added successfully.")
+            print("Resources:", self.resources)  # Add this line to print resources
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number of resources.")
 
     def optimize(self):
-        try:
+        
+            # Attempt to convert input values to numeric types
             pop_size = int(self.pop_size_entry.get())
             num_generations = int(self.num_generations_entry.get())
             mutation_rate = float(self.mutation_rate_entry.get())
 
             # Validate input values
             if pop_size <= 0 or num_generations <= 0 or mutation_rate <= 0:
+                # Check if input values are positive
                 messagebox.showerror("Error", "Please enter positive values for parameters.")
                 return
 
+            # Continue with optimization
             scheduler = TaskScheduler()
             scheduler.input_tasks(self.tasks)
-            scheduler.input_num_resources(self.num_resources)
+            scheduler.input_num_resources(len(self.resources))
             scheduler.input_parameters(pop_size, num_generations, mutation_rate)
             best_schedule = scheduler.optimize()
             messagebox.showinfo("Optimization Result", f"Best schedule: {best_schedule}")
 
-        except ValueError:
-            messagebox.showerror("Error", "Please enter valid numeric values for parameters.")
+
