@@ -67,22 +67,22 @@ class TaskScheduler:
                 schedule[i] = random.randint(0, len(self.tasks) - 1)
         print("After mutation:", schedule)
         return schedule
-
-
     def optimize(self):
         if self.tasks is None or len(self.tasks) == 0:
-            messagebox.showerror("Error", "No tasks provided. Please add tasks.")
-            return None  # Return None to indicate no optimization was performed
+            print("No tasks provided. Please add tasks.")
+            return None
+
+        if self.num_resources is None or self.num_resources == 0:
+            print("No resources provided. Please add resources.")
+            return None
 
         population = self.create_initial_population()
         if not population:
-            messagebox.showerror("Error", "Initial population is empty. Please check your inputs.")
-            return None  # Return None to indicate no optimization was performed
+            print("Initial population is empty. Please check your inputs.")
+            return None
 
         for gen in range(self.num_generations):
-            print(f"Generation {gen+1}/{self.num_generations}")
             parents = self.selection(population)
-            print("Selected parents:", parents)
             next_population = []
             for parent1, parent2 in zip(parents[::2], parents[1::2]):
                 child1, child2 = self.crossover(parent1, parent2)
@@ -98,19 +98,6 @@ class TaskScheduler:
         best_schedule = min(population, key=self.evaluate_fitness)
         return best_schedule
 
-
-        for _ in range(self.num_generations):
-            parents = self.selection(population)
-            next_population = []
-            for parent1, parent2 in zip(parents[::2], parents[1::2]):
-                child1, child2 = self.crossover(parent1, parent2)
-                child1 = self.mutate(child1)
-                child2 = self.mutate(child2)
-                next_population.extend([child1, child2])
-            population = next_population
-
-        best_schedule = min(population, key=self.evaluate_fitness)
-        return best_schedule
 
 
 
@@ -201,6 +188,7 @@ class TaskSchedulerGUI:
             self.tasks = tasks
             messagebox.showinfo("Success", "Tasks added successfully.")
             print("Tasks:", self.tasks)  # Add this line to print tasks
+            # Add code to display tasks in the GUI if needed
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number of tasks.")
 
@@ -219,28 +207,24 @@ class TaskSchedulerGUI:
             self.resources = resources  # Store resources in self.resources
             messagebox.showinfo("Success", "Resources added successfully.")
             print("Resources:", self.resources)  # Add this line to print resources
+            # Add code to display resources in the GUI if needed
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number of resources.")
-
     def optimize(self):
-        
-            # Attempt to convert input values to numeric types
-            pop_size = int(self.pop_size_entry.get())
-            num_generations = int(self.num_generations_entry.get())
-            mutation_rate = float(self.mutation_rate_entry.get())
+        pop_size = int(self.pop_size_entry.get())
+        num_generations = int(self.num_generations_entry.get())
+        mutation_rate = float(self.mutation_rate_entry.get())
 
-            # Validate input values
-            if pop_size <= 0 or num_generations <= 0 or mutation_rate <= 0:
-                # Check if input values are positive
-                messagebox.showerror("Error", "Please enter positive values for parameters.")
-                return
+        if pop_size <= 0 or num_generations <= 0 or mutation_rate <= 0:
+            messagebox.showerror("Error", "Please enter positive values for parameters.")
+            return
 
-            # Continue with optimization
-            scheduler = TaskScheduler()
-            scheduler.input_tasks(self.tasks)
-            scheduler.input_num_resources(len(self.resources))
-            scheduler.input_parameters(pop_size, num_generations, mutation_rate)
-            best_schedule = scheduler.optimize()
+        scheduler = TaskScheduler()
+        scheduler.input_tasks(self.tasks)
+        scheduler.input_num_resources(len(self.resources))
+        scheduler.input_parameters(pop_size, num_generations, mutation_rate)
+        best_schedule = scheduler.optimize()
+        if best_schedule:
             messagebox.showinfo("Optimization Result", f"Best schedule: {best_schedule}")
-
-
+        else:
+            messagebox.showerror("Error", "No solution found. Please check your inputs.")

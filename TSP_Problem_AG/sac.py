@@ -128,7 +128,7 @@ class KnapsackApp:
     def exit_app(self):
         self.master.destroy()
 
-    def add_item(self, item_name=None):
+    def add_item(self, item_name):
         # Add the selected item
         if item_name == "Bottle":
             self.items.append((5, 10))  # Example weight and value for Bottle
@@ -195,6 +195,16 @@ class KnapsackApp:
         except ValueError:
             messagebox.showerror("Error", "Invalid input for parameters. Please enter valid numbers.")
 
+    # def fitness(self, individual):
+    #     total_weight = 0
+    #     total_value = 0
+    #     for i, selected in enumerate(individual):
+    #         if selected:
+    #             total_weight += self.items[i][0]
+    #             total_value += self.items[i][1]
+    #     if total_weight > self.max_weight:
+    #         return 0  # Penalize solutions exceeding the weight limit
+    #     return total_value
     def fitness(self, individual):
         total_weight = 0
         total_value = 0
@@ -205,6 +215,8 @@ class KnapsackApp:
         if total_weight > self.max_weight:
             return 0  # Penalize solutions exceeding the weight limit
         return total_value
+
+
 
     def genetic_algorithm(self, pop_size, num_generations, mutation_rate):
         population = [[random.choice([0, 1]) for _ in range(len(self.items))] for _ in range(pop_size)]
