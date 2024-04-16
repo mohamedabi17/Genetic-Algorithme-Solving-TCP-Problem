@@ -11,7 +11,7 @@ class KnapsackApp:
         self.master.attributes("-fullscreen", True)
         self.dark_mode = False  # Default: Light Mode
         self.selected_items=[]
-
+        self.master.configure(bg="white")
         # self.background_image = background_image
 
         self.item_name_mapping = {
@@ -35,34 +35,40 @@ class KnapsackApp:
         self.create_panel()
 
     def create_panel(self):
-            # Create a frame for buttons
-            self.button_frame = ttk.Frame(self.master)
-            self.button_frame.pack(side=tk.TOP, fill=tk.X, padx=30, pady=15)
+        # Create a frame for buttons
+        self.button_frame = ttk.Frame(self.master)
+        self.button_frame.pack(side=tk.TOP, fill=tk.X, padx=30, pady=15)
 
-            # Add solve button
-            self.solve_button = ttk.Button(self.button_frame, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
-            self.solve_button.pack(side=tk.RIGHT, padx=10)
+        # Add solve button
+        self.solve_button = ttk.Button(self.button_frame, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
+        self.solve_button.pack(side=tk.RIGHT, padx=10)
 
-            # Add remove item button
-            self.remove_item_button = ttk.Button(self.button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
-            self.remove_item_button.pack(side=tk.RIGHT, padx=10)
+        # Add remove item button
+        self.remove_item_button = ttk.Button(self.button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
+        self.remove_item_button.pack(side=tk.RIGHT, padx=10)
 
-            # Add exit button
-            self.exit_button = ttk.Button(self.button_frame, text="Exit", command=self.exit_app, style="Custom.TButton")
-            self.exit_button.pack(side=tk.RIGHT, padx=10)
+        # Add exit button
+        self.exit_button = ttk.Button(self.button_frame, text="Exit", command=self.exit_app, style="Custom.TButton")
+        self.exit_button.pack(side=tk.RIGHT, padx=10)
 
-            # Create the canvas for the graph
-            self.graph_canvas = tk.Canvas(self.master)
-            self.graph_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # Add return button
+        self.return_button = ttk.Button(self.button_frame, text="Return to Main App", command=self.return_to_main_app, style="Custom.TButton")
+        self.return_button.pack(side=tk.LEFT, padx=10)
+        # Add return button
+        self.return_button = ttk.Button(self.button_frame, text="Dark Mode", command=self.activate_dark_mode, style="Custom.TButton")
+        self.return_button.pack(side=tk.LEFT, padx=10)
 
-            # # Create the text area for the result
-            # self.result_text = tk.Text(self.master, height=10, width=50)
-            # self.result_text.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=10)
+        # Create the canvas for the graph
+        self.graph_canvas = tk.Canvas(self.master)
+        self.graph_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+        
 
     def create_widgets(self):
         self.title_label = ttk.Label(self.master, text="Knapsack Problem Solved By Genetic Algorithm", font=("Helvetica", 20, "bold"))
         self.title_label.pack(side=tk.TOP, padx=20, pady=10)
+
+
         
         self.item_frame = ttk.Frame(self.master, padding="20 10")
         self.item_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -174,6 +180,26 @@ class KnapsackApp:
 
         # Update item labels
         self.update_item_labels()
+    def return_to_main_app(self):
+            # Destroy the current window (KnapsackApp window)
+            self.master.destroy()
+
+
+    def activate_dark_mode(self):
+            # Toggle dark mode
+            self.dark_mode = not self.dark_mode
+
+            # Change the appearance based on the mode
+            if self.dark_mode:
+                # Dark mode settings
+                self.master.configure(bg="black")
+                # Update other widget configurations for dark mode
+            else:
+                # Light mode settings
+                self.master.configure(bg="white")
+                # Update other widget configurations for light mode 
+
+
 
     def remove_item(self):
         # Remove the last item

@@ -104,28 +104,8 @@ def main():
         style='Modern.TButton'
     )
     button3.place(relx=0.5, rely=0.8, anchor=tk.CENTER)  # Center the button vertically
-    
-    # Create a frame to hold the hide and return buttons
-    button_frame = ttk.Frame(root)
-    button_frame.place(relx=1, rely=0, anchor=tk.NE)  # Place the frame in the top-right corner
+     
 
-    # Add hide button
-    hide_button = ttk.Button(
-        button_frame,
-        text="Hide",
-        command=root.iconify,  # Minimize the window
-        style='Modern.TButton'
-    )
-    hide_button.pack(side=tk.TOP, padx=10, pady=5)
-
-    # Add return button
-    return_button = ttk.Button(
-        button_frame,
-        text="Return",
-        command=root.destroy,  # Close the window
-        style='Modern.TButton'
-    )
-    return_button.pack(side=tk.TOP, padx=10, pady=5)
     root.mainloop()
 
 if __name__ == "__main__":
