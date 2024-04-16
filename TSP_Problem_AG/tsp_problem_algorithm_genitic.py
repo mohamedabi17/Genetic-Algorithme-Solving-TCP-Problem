@@ -11,7 +11,7 @@ from PIL import Image, ImageTk
 import random  # Add this import statement at the beginning of your script
 
 class GraphConverterApp:
-    def __init__(self, master, background_image):
+    def __init__(self, master):
         self.master = master
         self.master.title("TSP Solver with Genetic Algorithm")
         self.master.attributes("-fullscreen", True)
@@ -23,7 +23,7 @@ class GraphConverterApp:
         # self.title_label = ttk.Label(self.master, text="TSP Solver with Genetic Algorithm", font=("Helvetica", 24, "bold"))
         # self.title_label.pack(pady=30)  # Adjust padding as needed
         
-        self.background_image = background_image
+        # self.background_image = background_image
 
         self.points = []
         self.distances = None

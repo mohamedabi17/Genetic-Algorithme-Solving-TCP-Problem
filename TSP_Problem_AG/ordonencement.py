@@ -105,7 +105,9 @@ class TaskSchedulerGUI:
     def __init__(self, master):
         self.master = master
         self.master.title("Task Scheduler")  # Set the title of the main window
-
+        
+        self.title_label = ttk.Label(self.master, text="Task Scheduler Solved By Genetic Algorithm", font=("Helvetica", 20, "bold"))
+        self.title_label.pack(side=tk.TOP, padx=20, pady=10)
         #         # Add title label
         # self.title_label = ttk.Label(self.master, text="Task Scheduler", font=("Helvetica", 24, "bold"))
         # self.title_label.pack(pady=20)  # Adjust padding as needed

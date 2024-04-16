@@ -12,6 +12,8 @@ class KnapsackApp:
         self.dark_mode = False  # Default: Light Mode
         self.selected_items=[]
 
+        # self.background_image = background_image
+
         self.item_name_mapping = {
             (5, 10): "Bottle",
             (15, 30): "Headphones",
@@ -33,31 +35,47 @@ class KnapsackApp:
         self.create_panel()
 
     def create_panel(self):
-        self.button_frame = CTkFrame(self.master)
-        self.button_frame.pack(side=tk.TOP, pady=5)
-        
-        self.graph_canvas = tk.Canvas(self.master)
-        self.graph_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        self.result_text = tk.Text(self.master, height=10, width=50)
-        self.result_text.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=10)
-        
-        self.add_item_button = ttk.Button(self.button_frame, text="Add Item", command=self.add_item, style="Custom.TButton")
-        self.add_item_button.pack(side=tk.RIGHT, padx=5)
+            # Create a frame for buttons
+            self.button_frame = ttk.Frame(self.master)
+            self.button_frame.pack(side=tk.TOP, fill=tk.X, padx=30, pady=15)
 
-        self.remove_item_button = ttk.Button(self.button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
-        self.remove_item_button.pack(side=tk.RIGHT, padx=5)
+            # Add solve button
+            self.solve_button = ttk.Button(self.button_frame, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
+            self.solve_button.pack(side=tk.RIGHT, padx=10)
 
-        self.exit_button = ttk.Button(self.button_frame, text="Exit", command=self.exit_app, style="Custom.TButton")
-        self.exit_button.pack(side=tk.RIGHT, padx=5)
+            # Add remove item button
+            self.remove_item_button = ttk.Button(self.button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
+            self.remove_item_button.pack(side=tk.RIGHT, padx=10)
 
-        # Add solve button
-        self.solve_button = ttk.Button(self.button_frame, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
-        self.solve_button.pack(side=tk.RIGHT, padx=5)
+            # Add exit button
+            self.exit_button = ttk.Button(self.button_frame, text="Exit", command=self.exit_app, style="Custom.TButton")
+            self.exit_button.pack(side=tk.RIGHT, padx=10)
+
+            # Create the canvas for the graph
+            self.graph_canvas = tk.Canvas(self.master)
+            self.graph_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+            # # Create the text area for the result
+            # self.result_text = tk.Text(self.master, height=10, width=50)
+            # self.result_text.pack(side=tk.BOTTOM, fill=tk.BOTH, padx=10, pady=10)
+
 
     def create_widgets(self):
+        self.title_label = ttk.Label(self.master, text="Knapsack Problem Solved By Genetic Algorithm", font=("Helvetica", 20, "bold"))
+        self.title_label.pack(side=tk.TOP, padx=20, pady=10)
+        
         self.item_frame = ttk.Frame(self.master, padding="20 10")
         self.item_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+        # Create a frame for buttons at the top
+        # Create a frame for buttons at the top
+        self.button_frame_top = ttk.Frame(self.master, padding="20")
+        self.button_frame_top.place(relx=0.5, y=10, anchor=tk.CENTER)
+
+
+        # Create a frame for buttons at the top
+        self.button_frame_top = ttk.Frame(self.master, padding="20")
+        self.button_frame_top.pack(side=tk.TOP, fill=tk.X)
 
         self.item_labels = []
         for i, (weight, value) in enumerate(self.items):
@@ -90,9 +108,9 @@ class KnapsackApp:
         self.mutation_entry.grid(row=2, column=1, padx=5, pady=5)
         self.mutation_entry.insert(0, "0.1")
 
-        # Create a frame for buttons
-        self.button_frame = ttk.Frame(self.master, padding="20")
-        self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
+        # # Create a frame for buttons
+        # self.button_frame = ttk.Frame(self.master, padding="20")
+        # self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Define icons for objects
         self.bottle_image = Image.open("sac_images/Bottle.png")
@@ -115,21 +133,25 @@ class KnapsackApp:
         self.snacks_image = self.snacks_image.resize((50, 50), Image.LANCZOS)
         self.snacks = ImageTk.PhotoImage(self.snacks_image)
 
-        # Add buttons for objects
-        self.bottle_button = ttk.Button(self.button_frame, text="Bottle", image=self.bottle, compound=tk.LEFT, command=lambda: self.add_item("Bottle"), style="Custom.TButton")
-        self.bottle_button.pack(side=tk.TOP, padx=5, pady=5)
+         # Add buttons for objects at the top
+        buttons = [
+            ("Bottle", self.bottle),
+            ("Headphones", self.headphones),
+            ("Laptop", self.laptop),
+            ("Phone", self.phone),
+            ("Snacks", self.snacks)
+        ]
 
-        self.headphones_button = ttk.Button(self.button_frame, text="Headphones", image=self.headphones, compound=tk.LEFT, command=lambda: self.add_item("Headphones"), style="Custom.TButton")
-        self.headphones_button.pack(side=tk.TOP, padx=5, pady=5)
+        for i, (item_name, image) in enumerate(buttons):
+            button = ttk.Button(self.button_frame_top, text=item_name, image=image, compound=tk.LEFT,
+                                command=lambda name=item_name: self.add_item(name), style="Custom.TButton")
+            button.grid(row=0, column=i, padx=5, pady=5, sticky="ew")
 
-        self.laptop_button = ttk.Button(self.button_frame, text="Laptop", image=self.laptop, compound=tk.LEFT, command=lambda: self.add_item("Laptop"), style="Custom.TButton")
-        self.laptop_button.pack(side=tk.TOP, padx=5, pady=5)
+        # Configure column weights to make buttons center-aligned
+        for i in range(len(buttons)):
+            self.button_frame_top.grid_columnconfigure(i, weight=1)
 
-        self.phone_button = ttk.Button(self.button_frame, text="Phone", image=self.phone, compound=tk.LEFT, command=lambda: self.add_item("Phone"), style="Custom.TButton")
-        self.phone_button.pack(side=tk.TOP, padx=5, pady=5)
 
-        self.snacks_button = ttk.Button(self.button_frame, text="Snacks", image=self.snacks, compound=tk.LEFT, command=lambda: self.add_item("Snacks"), style="Custom.TButton")
-        self.snacks_button.pack(side=tk.TOP, padx=5, pady=5)
 
     def exit_app(self):
         self.master.destroy()
@@ -186,32 +208,69 @@ class KnapsackApp:
             selected_items = [self.selected_items[i] for i, selected in enumerate(solution) if selected]
 
             if selected_items:
-                item_names = ', '.join([f"Item {i+1} (Weight={item[0]}, Value={item[1]})" for i, item in enumerate(selected_items)])
-                self.solution_label.config(text=f"Best Solution: {item_names}")
+                # Calculate the total weight and value of selected items
+                total_weight = sum(item[0] for item in selected_items)
+                total_value = sum(item[1] for item in selected_items)
 
-                # Display images of selected items in a popup
+                # Calculate fitness (total value divided by total weight)
+                fitness = total_value / total_weight if total_weight != 0 else 0
+
+                item_names = ', '.join([f"Item {i+1} (Weight={item[0]}, Value={item[1]})" for i, item in enumerate(selected_items)])
+                self.solution_label.config(text=f"Best Solution: {item_names}, Total Weight: {total_weight}, Total Value: {total_value}, Fitness: {fitness}")
+
+                # Display images of selected items and fitness in a popup
                 popup = tk.Toplevel(self.master)
                 popup.title("Selected Items")
+
+                # Calculate the center position for the popup window
+                screen_width = self.master.winfo_screenwidth()
+                screen_height = self.master.winfo_screenheight()
+                popup_width = 500  # Adjust as needed
+                popup_height = 500  # Adjust as needed
+                x_position = (screen_width - popup_width) // 2
+                y_position = (screen_height - popup_height) // 2
+                popup.geometry(f"{popup_width}x{popup_height}+{x_position}+{y_position}")
+
+                # Add title label
+                title_label = ttk.Label(popup, text="Solution Of the Knapsack problem", font=("Helvetica", 16, "bold"))
+                title_label.pack(side=tk.TOP, padx=10, pady=5)
+
+                # Add fitness label
+                fitness_label = ttk.Label(popup, text=f"Fitness: {fitness}", font=("Helvetica", 14, "bold"))
+                fitness_label.pack(side=tk.TOP, padx=10, pady=5)
+
+                # Create a frame to hold the items
+                item_frame = ttk.Frame(popup)
+                item_frame.pack(side=tk.TOP, padx=10, pady=5)
 
                 for i, (weight, value) in enumerate(selected_items):
                     try:
                         item_name = self.name_by_weight_value.get((weight, value))
                         if item_name:
+                            # Load item image
                             item_image_path = f"sac_images/{item_name}.png"  # Assuming images are named after item names
                             item_image = Image.open(item_image_path)
                             item_image = item_image.resize((100, 100), Image.LANCZOS)
                             item_photo = ImageTk.PhotoImage(item_image)
-                            item_label = ttk.Label(popup, image=item_photo)
+
+                            # Create label with item image and information
+                            item_label = ttk.Label(item_frame, image=item_photo, text=f"Name: {item_name}\nWeight: {weight}\nValue: {value}", compound=tk.TOP)
                             item_label.image = item_photo
-                            item_label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
+                            item_label.grid(row=0, column=i, padx=10, pady=5, sticky="w")
                         else:
                             # If item name is not found, display an error message
                             messagebox.showerror("Error", f"Item with weight={weight} and value={value} not found")
                     except (FileNotFoundError, OSError) as e:
                         # Catch exceptions related to file not found or errors in opening the image
                         messagebox.showerror("Error", f"Error loading image for item with weight={weight} and value={value}: {e}")
+
+                # Add a hide button to close the popup
+                hide_button = ttk.Button(popup, text="Hide", command=popup.destroy)
+                hide_button.pack(side=tk.BOTTOM, padx=10, pady=10)
         except ValueError:
             messagebox.showerror("Error", "Invalid input for parameters. Please enter valid numbers.")
+
+
 
     def fitness(self, individual):
         total_weight = sum(self.selected_items[i][0] for i, selected in enumerate(individual) if selected)
@@ -261,6 +320,6 @@ class KnapsackApp:
                 individual[i] = 1 - individual[i]
         return individual
 
-root = tk.Tk()
-app = KnapsackApp(root)
-root.mainloop()
+# root = tk.Tk()
+# app = KnapsackApp(root)
+# root.mainloop()
