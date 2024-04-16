@@ -3,25 +3,36 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import random
 from customtkinter import CTkFrame
+
 class KnapsackApp:
-    def __init__(self, master, background_image2):
+    def __init__(self, master):
         self.master = master
         self.master.title("Knapsack Problem Solver")
         self.master.attributes("-fullscreen", True)
-        # self.master.attributes("-zoomed", True)
         self.dark_mode = False  # Default: Light Mode
+        self.selected_items=[]
 
-        # background_label2 = tk.Label(master, image=background_image2)
-        # background_label2.place(x=0, y=0, relwidth=1, relheight=1)
+        self.item_name_mapping = {
+            (5, 10): "Bottle",
+            (15, 30): "Headphones",
+            (30, 50): "Laptop",
+            (10, 20): "Phone",
+            (20, 25): "Snacks"
+        }
 
-        self.background_image2 = None
-        self.items = [(10, 60), (20, 100), (30, 120)]  # Example items (weight, value)
+        # Create name_by_weight_value dictionary
+        self.name_by_weight_value = {k: v for k, v in self.item_name_mapping.items()}
+
+        # Initialize background image if needed
+        # self.background_image2 = None
+
+        self.items = []  # Example items (weight, value)
         self.max_weight = 50
 
         self.create_widgets()
-        self.create_pannel()
+        self.create_panel()
 
-    def create_pannel(self):
+    def create_panel(self):
         self.button_frame = CTkFrame(self.master)
         self.button_frame.pack(side=tk.TOP, pady=5)
         
@@ -37,15 +48,12 @@ class KnapsackApp:
         self.remove_item_button = ttk.Button(self.button_frame, text="Remove Item", command=self.remove_item, style="Custom.TButton")
         self.remove_item_button.pack(side=tk.RIGHT, padx=5)
 
-        self.exit_button = ttk.Button(self.button_frame, text="Exit ", command=self.exit_app, style="Custom.TButton")
+        self.exit_button = ttk.Button(self.button_frame, text="Exit", command=self.exit_app, style="Custom.TButton")
         self.exit_button.pack(side=tk.RIGHT, padx=5)
 
         # Add solve button
         self.solve_button = ttk.Button(self.button_frame, text="Solve", command=self.solve_knapsack, style="Custom.TButton")
         self.solve_button.pack(side=tk.RIGHT, padx=5)
-
-
-
 
     def create_widgets(self):
         self.item_frame = ttk.Frame(self.master, padding="20 10")
@@ -87,24 +95,24 @@ class KnapsackApp:
         self.button_frame.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Define icons for objects
-        self.bottle_image = Image.open("sac_images/1.png")
-        self.bottle_image = self.bottle_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.bottle_image = Image.open("sac_images/Bottle.png")
+        self.bottle_image = self.bottle_image.resize((50, 50), Image.LANCZOS)
         self.bottle = ImageTk.PhotoImage(self.bottle_image)
 
-        self.headphones_image = Image.open("sac_images/2.png")
-        self.headphones_image = self.headphones_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.headphones_image = Image.open("sac_images/Headphones.png")
+        self.headphones_image = self.headphones_image.resize((50, 50), Image.LANCZOS)
         self.headphones = ImageTk.PhotoImage(self.headphones_image)
 
-        self.laptop_image = Image.open("sac_images/3.png")
-        self.laptop_image = self.laptop_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.laptop_image = Image.open("sac_images/Laptop.png")
+        self.laptop_image = self.laptop_image.resize((50, 50), Image.LANCZOS)
         self.laptop = ImageTk.PhotoImage(self.laptop_image)
 
-        self.phone_image = Image.open("sac_images/4.png")
-        self.phone_image = self.phone_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.phone_image = Image.open("sac_images/Phone.png")
+        self.phone_image = self.phone_image.resize((50, 50), Image.LANCZOS)
         self.phone = ImageTk.PhotoImage(self.phone_image)
 
-        self.snacks_image = Image.open("sac_images/5.png")
-        self.snacks_image = self.snacks_image.resize((50, 50),Image.Resampling.LANCZOS)
+        self.snacks_image = Image.open("sac_images/Snacks.png")
+        self.snacks_image = self.snacks_image.resize((50, 50), Image.LANCZOS)
         self.snacks = ImageTk.PhotoImage(self.snacks_image)
 
         # Add buttons for objects
@@ -123,8 +131,6 @@ class KnapsackApp:
         self.snacks_button = ttk.Button(self.button_frame, text="Snacks", image=self.snacks, compound=tk.LEFT, command=lambda: self.add_item("Snacks"), style="Custom.TButton")
         self.snacks_button.pack(side=tk.TOP, padx=5, pady=5)
 
-
-
     def exit_app(self):
         self.master.destroy()
 
@@ -141,13 +147,18 @@ class KnapsackApp:
         elif item_name == "Snacks":
             self.items.append((20, 25))  # Example weight and value for Snacks
 
+        # Add the selected item to the list of selected items
+        self.selected_items.append(self.items[-1])
+
         # Update item labels
         self.update_item_labels()
 
     def remove_item(self):
         # Remove the last item
-        if self.items:
+        if self.selected_items:
+            self.selected_items.pop()
             self.items.pop()
+            
 
         # Update item labels
         self.update_item_labels()
@@ -163,6 +174,7 @@ class KnapsackApp:
             label = ttk.Label(self.item_frame, text=f"Item {i+1}: Weight={weight}, Value={value}", font=("Helvetica", 14))
             label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
             self.item_labels.append(label)
+    
 
     def solve_knapsack(self):
         try:
@@ -171,7 +183,7 @@ class KnapsackApp:
             mutation_rate = float(self.mutation_entry.get())
 
             solution = self.genetic_algorithm(population_size, num_generations, mutation_rate)
-            selected_items = [self.items[i] for i, selected in enumerate(solution) if selected]
+            selected_items = [self.selected_items[i] for i, selected in enumerate(solution) if selected]
 
             if selected_items:
                 item_names = ', '.join([f"Item {i+1} (Weight={item[0]}, Value={item[1]})" for i, item in enumerate(selected_items)])
@@ -182,50 +194,46 @@ class KnapsackApp:
                 popup.title("Selected Items")
 
                 for i, (weight, value) in enumerate(selected_items):
-                    item_image_path = f"sac_images/{i+1}.png"  # Assuming images are named item_1.png, item_2.png, etc.
-                    item_image = Image.open(item_image_path)
-                    item_image = item_image.resize((100, 100), Image.LANCZOS)
-                    item_photo = ImageTk.PhotoImage(item_image)
-                    item_label = ttk.Label(popup, image=item_photo)
-                    item_label.image = item_photo
-                    item_label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
-
-            else:
-                self.solution_label.config(text="No items selected in the solution")
+                    try:
+                        item_name = self.name_by_weight_value.get((weight, value))
+                        if item_name:
+                            item_image_path = f"sac_images/{item_name}.png"  # Assuming images are named after item names
+                            item_image = Image.open(item_image_path)
+                            item_image = item_image.resize((100, 100), Image.LANCZOS)
+                            item_photo = ImageTk.PhotoImage(item_image)
+                            item_label = ttk.Label(popup, image=item_photo)
+                            item_label.image = item_photo
+                            item_label.grid(row=i, column=0, padx=10, pady=5, sticky="w")
+                        else:
+                            # If item name is not found, display an error message
+                            messagebox.showerror("Error", f"Item with weight={weight} and value={value} not found")
+                    except (FileNotFoundError, OSError) as e:
+                        # Catch exceptions related to file not found or errors in opening the image
+                        messagebox.showerror("Error", f"Error loading image for item with weight={weight} and value={value}: {e}")
         except ValueError:
             messagebox.showerror("Error", "Invalid input for parameters. Please enter valid numbers.")
 
-    # def fitness(self, individual):
-    #     total_weight = 0
-    #     total_value = 0
-    #     for i, selected in enumerate(individual):
-    #         if selected:
-    #             total_weight += self.items[i][0]
-    #             total_value += self.items[i][1]
-    #     if total_weight > self.max_weight:
-    #         return 0  # Penalize solutions exceeding the weight limit
-    #     return total_value
     def fitness(self, individual):
-        total_weight = 0
-        total_value = 0
-        for i, selected in enumerate(individual):
-            if selected:
-                total_weight += self.items[i][0]
-                total_value += self.items[i][1]
+        total_weight = sum(self.selected_items[i][0] for i, selected in enumerate(individual) if selected)
+        total_value = sum(self.selected_items[i][1] for i, selected in enumerate(individual) if selected)
         if total_weight > self.max_weight:
             return 0  # Penalize solutions exceeding the weight limit
         return total_value
 
-
-
     def genetic_algorithm(self, pop_size, num_generations, mutation_rate):
-        population = [[random.choice([0, 1]) for _ in range(len(self.items))] for _ in range(pop_size)]
+        # Generate individuals based on selected items
+        population = []
+        for _ in range(pop_size):
+            individual = [random.choice([0, 1]) for _ in range(len(self.selected_items))]
+            population.append(individual)
 
         for _ in range(num_generations):
             population = self.evolve_population(population, mutation_rate)
 
         best_individual = max(population, key=self.fitness)
         return best_individual
+
+
 
     def evolve_population(self, population, mutation_rate):
         new_population = []
@@ -253,3 +261,6 @@ class KnapsackApp:
                 individual[i] = 1 - individual[i]
         return individual
 
+root = tk.Tk()
+app = KnapsackApp(root)
+root.mainloop()
